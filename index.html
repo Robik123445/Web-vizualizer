@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel Editor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex h-screen">
+  <div id="sidebar" class="w-48 p-2 overflow-y-auto border-r">
+    <h2 class="font-bold mb-2">Tiles</h2>
+    <div id="tilePalette" class="grid grid-cols-2 gap-2 mb-4"></div>
+    <h2 class="font-bold mb-2">Colors</h2>
+    <div id="colorPalette" class="grid grid-cols-2 gap-2 mb-4"></div>
+    <button id="rotateBtn" class="bg-blue-500 text-white px-2 py-1 mb-2 w-full">Rotate</button>
+    <button id="undoBtn" class="bg-gray-500 text-white px-2 py-1 mb-2 w-full">Undo</button>
+    <button id="resetBtn" class="bg-red-500 text-white px-2 py-1 mb-2 w-full">Reset</button>
+    <button id="exportJson" class="bg-green-500 text-white px-2 py-1 mb-2 w-full">Export JSON</button>
+    <button id="exportPng" class="bg-green-500 text-white px-2 py-1 mb-2 w-full">Export PNG</button>
+    <button id="downloadLog" class="bg-yellow-500 text-white px-2 py-1 w-full">Download Log</button>
+    <div id="usage" class="mt-4 text-sm"></div>
+  </div>
+  <div class="flex-1 p-2">
+    <svg id="grid" class="border" xmlns="http://www.w3.org/2000/svg"></svg>
+  </div>
+  <script type="module" src="src/app.js"></script>
+</body>
+</html>
