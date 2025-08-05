@@ -1,2 +1,32 @@
-# Web-vizualizer
-Webovy vizualizer
+diff --git a/README.md b/README.md
+index 1b704cfd20281e0297093204ea0dc5474858912a..25c266d93b0ef36b7e3418823689d3a90ab0086e 100644
+--- a/README.md
++++ b/README.md
+@@ -1,2 +1,26 @@
+ # Web-vizualizer
+-Webovy vizualizer
++
++Simple in-browser editor for decorative panels.
++
++## Usage
++1. Open `index.html` in a modern browser.
++2. Select a tile and color from the left palette.
++3. Click on the grid to place panels, rotate with **Rotate**, remove with right click or **Undo**, reset the grid with **Reset**.
++4. Export design via **Export JSON** or **Export PNG**.
++5. Download actions log with **Download Log**.
++
++## Development
++- TailwindCSS is loaded from CDN.
++- Grid utilities are in `src/utils.js`.
++- Logging helper is in `src/logger.js`.
++
++### Tests
++Run basic tests for utilities:
++```bash
++npm test
++```
++
++## Structure
++- `tiles/` and `colors/` contain sample assets and manifest JSON files.
++- `log.txt` placeholder for logs; in-browser logger offers download.
++- `requirements.txt` – no Python deps; JS deps via `package.json`.
