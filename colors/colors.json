@@ -1,0 +1,6 @@
+{
+  "basic": [
+    {"name": "red", "file": "red.png", "color": "#ff0000"},
+    {"name": "blue", "file": "blue.png", "color": "#0000ff"}
+  ]
+}
