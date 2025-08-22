@@ -10,23 +10,30 @@
   <div class="app">
     <aside class="sidebar">
       <div class="section">
-        <div class="section-title">Patterns</div>
-        <div id="patterns" class="thumb-grid"></div>
+        <div class="section-title">Tile palette</div>
+        <div id="tilePalette" class="thumb-grid"></div>
       </div>
       <div class="section">
-        <div class="section-title">Colors</div>
-        <div id="colors" class="thumb-grid"></div>
+        <div class="section-title">Color palette</div>
+        <div id="colorPalette" class="thumb-grid"></div>
+      </div>
+      <div class="section">
+        <div class="section-title">Usage</div>
+        <div id="usage"></div>
       </div>
     </aside>
 
     <main class="stage-wrap">
       <div class="toolbar">
         <div class="left">
+          <button id="rotateBtn" class="btn">Rotate</button>
           <button id="undoBtn" class="btn">Undo</button>
-          <button id="redoBtn" class="btn">Redo</button>
-          <button id="clearBtn" class="btn danger">Clear</button>
+          <button id="resetBtn" class="btn danger">Reset</button>
         </div>
         <div class="right">
+          <button id="exportJson" class="btn">Export JSON</button>
+          <button id="exportPng" class="btn">Export PNG</button>
+          <button id="downloadLog" class="btn">Download Log</button>
           <label class="ctrl">Cell
             <input id="cellSize" type="range" min="60" max="180" value="120" />
           </label>
@@ -40,7 +47,7 @@
       </div>
 
       <div id="stage" class="stage">
-        <div id="grid" class="grid"></div>
+        <svg id="grid"></svg>
         <!-- sem renderuje tvoj JS dlaždice -->
       </div>
     </main>
