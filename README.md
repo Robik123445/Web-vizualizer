@@ -5,14 +5,18 @@ Simple in-browser editor for decorative panels.
 ## Usage
 1. Open `index.html` in a modern browser.
 2. Select a tile and color from the left palette.
-3. Click on the grid to place panels, rotate with **Rotate**, remove with right click or **Undo**, reset the grid with **Reset**.
-4. Export design via **Export JSON** or **Export PNG**.
-5. Download actions log with **Download Log**.
+3. Click on the grid to place panels, rotate with **Rotate**, remove with right click or **Undo**.
+4. Adjust cell size with the **Cell** slider; show or hide grid lines via **Grid** toggle.
+5. Clear the scene with **Clear** when needed.
+6. Export design via **Export JSON** or **Export PNG**.
+7. Download actions log with **Download Log**.
 
 On small screens use the **Menu** button to toggle the sidebar; layout adapts down to 640px.
 
+During asset loading, palettes show animated placeholders so the user always knows something is happening. Selected tiles and colors are outlined for clarity.
+
 ## Development
-- TailwindCSS is loaded from CDN.
+- Custom CSS defines the UI.
 - Grid utilities are in `src/utils.js`.
 - Logging helper is in `src/logger.js`.
 

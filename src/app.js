@@ -5,7 +5,7 @@ import { safeFetch, cacheBust } from './fetcher.js';
 // Grid configuration
 const GRID_WIDTH = 8;
 const GRID_HEIGHT = 4;
-const CELL_SIZE = 80;
+let cellSize = 120;
 
 const logger = new Logger();
 
@@ -25,9 +25,7 @@ init();
 
 /** Main init */
 async function init() {
-  gridSvg.setAttribute('width', GRID_WIDTH * CELL_SIZE);
-  gridSvg.setAttribute('height', GRID_HEIGHT * CELL_SIZE);
-  drawGridLines();
+  redrawGrid();
   const tilesInfo = await loadTiles();
   const colorsInfo = await loadColors();
   console.log(`/tiles/tiles.json status: ${tilesInfo.status}, count: ${tilesInfo.count}`);
@@ -40,21 +38,38 @@ async function init() {
 function drawGridLines() {
   for (let y = 0; y <= GRID_HEIGHT; y++) {
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.classList.add('grid-line');
     line.setAttribute('x1', 0);
-    line.setAttribute('y1', y * CELL_SIZE);
-    line.setAttribute('x2', GRID_WIDTH * CELL_SIZE);
-    line.setAttribute('y2', y * CELL_SIZE);
+    line.setAttribute('y1', y * cellSize);
+    line.setAttribute('x2', GRID_WIDTH * cellSize);
+    line.setAttribute('y2', y * cellSize);
     line.setAttribute('stroke', '#ccc');
     gridSvg.appendChild(line);
   }
   for (let x = 0; x <= GRID_WIDTH; x++) {
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line.setAttribute('x1', x * CELL_SIZE);
+    line.classList.add('grid-line');
+    line.setAttribute('x1', x * cellSize);
     line.setAttribute('y1', 0);
-    line.setAttribute('x2', x * CELL_SIZE);
-    line.setAttribute('y2', GRID_HEIGHT * CELL_SIZE);
+    line.setAttribute('x2', x * cellSize);
+    line.setAttribute('y2', GRID_HEIGHT * cellSize);
     line.setAttribute('stroke', '#ccc');
     gridSvg.appendChild(line);
+  }
+}
+
+/** Redraw grid lines and existing tiles based on current cell size */
+function redrawGrid() {
+  gridSvg.setAttribute('width', GRID_WIDTH * cellSize);
+  gridSvg.setAttribute('height', GRID_HEIGHT * cellSize);
+  gridSvg.innerHTML = '';
+  drawGridLines();
+  for (const t of serializeGrid(gridData)) {
+    drawTile(t);
+  }
+  const toggle = document.getElementById('gridToggle');
+  if (toggle && !toggle.checked) {
+    gridSvg.querySelectorAll('.grid-line').forEach(l => (l.style.display = 'none'));
   }
 }
 
@@ -64,7 +79,9 @@ function drawGridLines() {
  */
 async function loadTiles() {
   const palette = document.getElementById('tilePalette');
+  palette.innerHTML = '<div class="thumb skeleton"></div>'.repeat(4);
   const { data, status } = await safeFetch('tiles/tiles.json', logger);
+  palette.innerHTML = '';
   if (!data) {
     palette.innerHTML = '<p class="text-red-500">Failed to load tiles.</p>';
     return { status, count: 0 };
@@ -74,9 +91,11 @@ async function loadTiles() {
     for (const file of files) {
       const img = document.createElement('img');
       img.src = `tiles/${collection}/${file}${cacheBust}`;
-      img.className = 'cursor-pointer border';
+      img.className = 'thumb';
       img.addEventListener('click', () => {
         activeTile = { collection, file };
+        palette.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
+        img.classList.add('selected');
         logger.log(`select tile ${collection}/${file}`);
       });
       palette.appendChild(img);
@@ -92,7 +111,9 @@ async function loadTiles() {
  */
 async function loadColors() {
   const palette = document.getElementById('colorPalette');
+  palette.innerHTML = '<div class="thumb skeleton"></div>'.repeat(4);
   const { data, status } = await safeFetch('colors/colors.json', logger);
+  palette.innerHTML = '';
   if (!data) {
     palette.innerHTML = '<p class="text-red-500">Failed to load colors.</p>';
     return { status, count: 0 };
@@ -102,9 +123,11 @@ async function loadColors() {
     for (const item of items) {
       const img = document.createElement('img');
       img.src = `colors/${paletteName}/${item.file}${cacheBust}`;
-      img.className = 'cursor-pointer border';
+      img.className = 'thumb';
       img.addEventListener('click', () => {
         activeColor = item.color;
+        palette.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
+        img.classList.add('selected');
         logger.log(`select color ${item.name}`);
       });
       palette.appendChild(img);
@@ -150,10 +173,22 @@ function bindUI() {
     logger.log(`rotation set to ${rotation}`);
   });
   document.getElementById('undoBtn').addEventListener('click', undo);
-    document.getElementById('resetBtn').addEventListener('click', resetGrid);
+  document.getElementById('clearBtn').addEventListener('click', clearGrid);
   document.getElementById('exportJson').addEventListener('click', exportJson);
   document.getElementById('exportPng').addEventListener('click', exportPng);
   document.getElementById('downloadLog').addEventListener('click', () => logger.download());
+
+  document.getElementById('cellSize').addEventListener('input', e => {
+    cellSize = Number(e.target.value);
+    redrawGrid();
+    logger.log(`cell size ${cellSize}`);
+  });
+
+  document.getElementById('gridToggle').addEventListener('change', e => {
+    const show = e.target.checked;
+    gridSvg.querySelectorAll('.grid-line').forEach(l => (l.style.display = show ? 'block' : 'none'));
+    logger.log(`grid ${show ? 'shown' : 'hidden'}`);
+  });
   // toggle sidebar for mobile view
   const sidebarToggle = document.getElementById('sidebarToggle');
   sidebarToggle.addEventListener('click', () => {
@@ -185,8 +220,8 @@ function onGridClick(e) {
 /** Convert mouse event to grid cell */
 function getCellFromEvent(e) {
   const rect = gridSvg.getBoundingClientRect();
-  const x = Math.floor((e.clientX - rect.left) / CELL_SIZE);
-  const y = Math.floor((e.clientY - rect.top) / CELL_SIZE);
+  const x = Math.floor((e.clientX - rect.left) / cellSize);
+  const y = Math.floor((e.clientY - rect.top) / cellSize);
   return { x, y };
 }
 
@@ -194,18 +229,18 @@ function getCellFromEvent(e) {
 function drawTile(t) {
   const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
   g.setAttribute('id', t.id);
-  g.setAttribute('transform', `translate(${t.x * CELL_SIZE},${t.y * CELL_SIZE}) rotate(${t.rotation}, ${CELL_SIZE/2}, ${CELL_SIZE/2})`);
+  g.setAttribute('transform', `translate(${t.x * cellSize},${t.y * cellSize}) rotate(${t.rotation}, ${cellSize/2}, ${cellSize/2})`);
 
   const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-  rect.setAttribute('width', CELL_SIZE);
-  rect.setAttribute('height', CELL_SIZE);
+  rect.setAttribute('width', cellSize);
+  rect.setAttribute('height', cellSize);
   rect.setAttribute('fill', t.color);
   g.appendChild(rect);
 
   const img = document.createElementNS('http://www.w3.org/2000/svg', 'image');
   img.setAttributeNS('http://www.w3.org/1999/xlink', 'href', `tiles/${t.tile}`);
-  img.setAttribute('width', CELL_SIZE);
-  img.setAttribute('height', CELL_SIZE);
+  img.setAttribute('width', cellSize);
+  img.setAttribute('height', cellSize);
   g.appendChild(img);
 
   gridSvg.appendChild(g);
@@ -223,7 +258,7 @@ function undo() {
   }
 }
 
-function resetGrid() {
+function clearGrid() {
   for (let y = 0; y < GRID_HEIGHT; y++) {
     for (let x = 0; x < GRID_WIDTH; x++) {
       const t = gridData[y][x];
@@ -235,7 +270,8 @@ function resetGrid() {
     }
   }
   history.length = 0;
-  logger.log("reset");
+  redrawGrid();
+  logger.log('clear grid');
   updateUsage();
 }
 
@@ -276,8 +312,8 @@ function exportPng() {
   const img = new Image();
   img.onload = function () {
     const canvas = document.createElement('canvas');
-    canvas.width = GRID_WIDTH * CELL_SIZE;
-    canvas.height = GRID_HEIGHT * CELL_SIZE;
+    canvas.width = GRID_WIDTH * cellSize;
+    canvas.height = GRID_HEIGHT * cellSize;
     const ctx = canvas.getContext('2d');
     ctx.drawImage(img, 0, 0);
     const a = document.createElement('a');
