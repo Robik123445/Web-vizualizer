@@ -24,3 +24,8 @@ npm test
 - `tiles/` and `colors/` contain sample assets and manifest JSON files.
 - `log.txt` placeholder for logs; in-browser logger offers download.
 - `requirements.txt` – no Python deps; JS deps via `package.json`.
+
+## Diagnostics
+- Manifest files (`tiles/tiles.json`, `colors/colors.json`) are fetched safely with clear console errors on failure.
+- Toolbar badge shows loaded asset counts. If any count is zero, a red banner “Assets not loaded” appears.
+- In development (served from `file://` or `localhost`), a cache-busting query ensures asset changes are picked up without manual cache clearing.

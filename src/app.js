@@ -1,5 +1,6 @@
 import { createGrid, placeTile, removeTile, serializeGrid } from './utils.js';
 import { Logger } from './logger.js';
+import { safeFetch, cacheBust } from './fetcher.js';
 
 // Grid configuration
 const GRID_WIDTH = 8;
@@ -62,30 +63,24 @@ function drawGridLines() {
  */
 async function loadTiles() {
   const palette = document.getElementById('tilePalette');
-  let status = 0;
-  let count = 0;
-  try {
-    const res = await fetch('tiles/tiles.json');
-    status = res.status;
-    if (!res.ok) throw new Error(`HTTP ${status}`);
-    const data = await res.json();
-    for (const [collection, files] of Object.entries(data)) {
-      for (const file of files) {
-        const img = document.createElement('img');
-        img.src = `tiles/${collection}/${file}`;
-        img.className = 'cursor-pointer border';
-        img.addEventListener('click', () => {
-          activeTile = { collection, file };
-          logger.log(`select tile ${collection}/${file}`);
-        });
-        palette.appendChild(img);
-        count++;
-      }
-    }
-  } catch (err) {
-    logger.log(`load tiles error: ${err.message}`);
+  const { data, status } = await safeFetch('tiles/tiles.json', logger);
+  if (!data) {
     palette.innerHTML = '<p class="text-red-500">Failed to load tiles.</p>';
     return { status, count: 0 };
+  }
+  let count = 0;
+  for (const [collection, files] of Object.entries(data)) {
+    for (const file of files) {
+      const img = document.createElement('img');
+      img.src = `tiles/${collection}/${file}${cacheBust}`;
+      img.className = 'cursor-pointer border';
+      img.addEventListener('click', () => {
+        activeTile = { collection, file };
+        logger.log(`select tile ${collection}/${file}`);
+      });
+      palette.appendChild(img);
+      count++;
+    }
   }
   return { status, count };
 }
@@ -96,30 +91,24 @@ async function loadTiles() {
  */
 async function loadColors() {
   const palette = document.getElementById('colorPalette');
-  let status = 0;
-  let count = 0;
-  try {
-    const res = await fetch('colors/colors.json');
-    status = res.status;
-    if (!res.ok) throw new Error(`HTTP ${status}`);
-    const data = await res.json();
-    for (const [paletteName, items] of Object.entries(data)) {
-      for (const item of items) {
-        const img = document.createElement('img');
-        img.src = `colors/${paletteName}/${item.file}`;
-        img.className = 'cursor-pointer border';
-        img.addEventListener('click', () => {
-          activeColor = item.color;
-          logger.log(`select color ${item.name}`);
-        });
-        palette.appendChild(img);
-        count++;
-      }
-    }
-  } catch (err) {
-    logger.log(`load colors error: ${err.message}`);
+  const { data, status } = await safeFetch('colors/colors.json', logger);
+  if (!data) {
     palette.innerHTML = '<p class="text-red-500">Failed to load colors.</p>';
     return { status, count: 0 };
+  }
+  let count = 0;
+  for (const [paletteName, items] of Object.entries(data)) {
+    for (const item of items) {
+      const img = document.createElement('img');
+      img.src = `colors/${paletteName}/${item.file}${cacheBust}`;
+      img.className = 'cursor-pointer border';
+      img.addEventListener('click', () => {
+        activeColor = item.color;
+        logger.log(`select color ${item.name}`);
+      });
+      palette.appendChild(img);
+      count++;
+    }
   }
   return { status, count };
 }
