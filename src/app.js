@@ -94,11 +94,21 @@ async function loadTiles() {
       img.src = PLACEHOLDER_SRC; // simple placeholder
       img.dataset.src = `tiles/${collection}/${file}${cacheBust}`;
       img.className = 'thumb skeleton';
-      img.addEventListener('click', () => {
+      img.alt = `${collection} ${file}`;
+      img.tabIndex = 0;
+      // select tile and mark as active
+      const selectTile = () => {
         activeTile = { collection, file };
         palette.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
         img.classList.add('selected');
         logger.log(`select tile ${collection}/${file}`);
+      };
+      img.addEventListener('click', selectTile);
+      img.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          selectTile();
+        }
       });
       palette.appendChild(img);
       count++;
@@ -128,11 +138,21 @@ async function loadColors() {
       img.src = PLACEHOLDER_SRC; // simple placeholder
       img.dataset.src = `colors/${paletteName}/${item.file}${cacheBust}`;
       img.className = 'thumb skeleton';
-      img.addEventListener('click', () => {
+      img.alt = item.name;
+      img.tabIndex = 0;
+      // select color and mark as active
+      const selectColor = () => {
         activeColor = item.color;
         palette.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
         img.classList.add('selected');
         logger.log(`select color ${item.name}`);
+      };
+      img.addEventListener('click', selectColor);
+      img.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          selectColor();
+        }
       });
       palette.appendChild(img);
       count++;

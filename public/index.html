@@ -26,22 +26,22 @@
     <main class="stage-wrap">
       <div class="toolbar">
         <div class="left">
-          <button id="sidebarToggle" class="btn">Menu</button>
-          <button id="rotateBtn" class="btn">Rotate</button>
-          <button id="undoBtn" class="btn">Undo</button>
-          <button id="clearBtn" class="btn danger">Clear</button>
+          <button id="sidebarToggle" class="btn" aria-label="Toggle menu">Menu</button>
+          <button id="rotateBtn" class="btn" aria-label="Rotate tile">Rotate</button>
+          <button id="undoBtn" class="btn" aria-label="Undo last action">Undo</button>
+          <button id="clearBtn" class="btn danger" aria-label="Clear grid">Clear</button>
         </div>
         <div class="right">
-          <button id="importJson" class="btn">Import JSON</button>
-          <button id="exportJson" class="btn">Export JSON</button>
+          <button id="importJson" class="btn" aria-label="Import design from JSON">Import JSON</button>
+          <button id="exportJson" class="btn" aria-label="Export design as JSON">Export JSON</button>
           <label class="ctrl">Scale
             <select id="pngScale">
               <option value="1">1×</option>
               <option value="2">2×</option>
             </select>
           </label>
-          <button id="exportPng" class="btn">Export PNG</button>
-          <button id="downloadLog" class="btn">Download Log</button>
+          <button id="exportPng" class="btn" aria-label="Export design as PNG">Export PNG</button>
+          <button id="downloadLog" class="btn" aria-label="Download log file">Download Log</button>
           <label class="ctrl">Cell
             <input id="cellSize" type="range" min="60" max="180" value="120" />
           </label>

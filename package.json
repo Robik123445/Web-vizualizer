@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "test": "node tests/utils.test.js && node tests/fetcher.test.js && node tests/ui.test.js && node tests/controls.test.js && node tests/server.test.js && node tests/import.test.js && node tests/lazyload.test.js",
+    "test": "node tests/utils.test.js && node tests/fetcher.test.js && node tests/ui.test.js && node tests/controls.test.js && node tests/server.test.js && node tests/import.test.js && node tests/lazyload.test.js && node tests/a11y.test.js",
     "start": "node server.js"
   }
 }
