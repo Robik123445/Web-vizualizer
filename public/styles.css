@@ -1,56 +1,51 @@
-/* Base layout */
-body {
-  display: flex;
-  height: 100vh;
-  margin: 0;
-  font-family: sans-serif;
-}
+<!doctype html>
+<html lang="sk">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Web vizualizér</title>
+  <link rel="stylesheet" href="/styles.css?v=1" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="section">
+        <div class="section-title">Patterns</div>
+        <div id="patterns" class="thumb-grid"></div>
+      </div>
+      <div class="section">
+        <div class="section-title">Colors</div>
+        <div id="colors" class="thumb-grid"></div>
+      </div>
+    </aside>
 
-/* Sidebar */
-#sidebar {
-  width: 12rem;
-  padding: 0.5rem;
-  overflow-y: auto;
-  border-right: 1px solid #ccc;
-}
+    <main class="stage-wrap">
+      <div class="toolbar">
+        <div class="left">
+          <button id="undoBtn" class="btn">Undo</button>
+          <button id="redoBtn" class="btn">Redo</button>
+          <button id="clearBtn" class="btn danger">Clear</button>
+        </div>
+        <div class="right">
+          <label class="ctrl">Cell
+            <input id="cellSize" type="range" min="60" max="180" value="120" />
+          </label>
+          <label class="ctrl">Grid
+            <input id="gridToggle" type="checkbox" checked />
+          </label>
+          <label class="ctrl">Snap
+            <input id="snapToggle" type="checkbox" checked />
+          </label>
+        </div>
+      </div>
 
-#sidebar h2 {
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-}
+      <div id="stage" class="stage">
+        <div id="grid" class="grid"></div>
+        <!-- sem renderuje tvoj JS dlaždice -->
+      </div>
+    </main>
+  </div>
 
-.palette {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-.btn {
-  color: #fff;
-  padding: 0.25rem 0.5rem;
-  margin-bottom: 0.5rem;
-  width: 100%;
-  border: none;
-  cursor: pointer;
-}
-
-.btn.blue { background-color: #3b82f6; }
-.btn.gray { background-color: #6b7280; }
-.btn.red { background-color: #ef4444; }
-.btn.green { background-color: #10b981; }
-.btn.yellow { background-color: #f59e0b; }
-
-#usage {
-  margin-top: 1rem;
-  font-size: 0.875rem;
-}
-
-#main {
-  flex: 1;
-  padding: 0.5rem;
-}
-
-#grid {
-  border: 1px solid #000;
-}
+  <script src="/src/app.js" defer></script>
+</body>
+</html>
