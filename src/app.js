@@ -51,41 +51,59 @@ function drawGridLines() {
   }
 }
 
-/** Fetch tiles from manifest and render palette */
+/**
+ * Fetch tiles from manifest and render palette.
+ * On failure, log error and inform user.
+ */
 async function loadTiles() {
-  const res = await fetch('tiles/tiles.json');
-  const data = await res.json();
   const palette = document.getElementById('tilePalette');
-  for (const [collection, files] of Object.entries(data)) {
-    for (const file of files) {
-      const img = document.createElement('img');
-      img.src = `tiles/${collection}/${file}`;
-      img.className = 'cursor-pointer border';
-      img.addEventListener('click', () => {
-        activeTile = { collection, file };
-        logger.log(`select tile ${collection}/${file}`);
-      });
-      palette.appendChild(img);
+  try {
+    const res = await fetch('tiles/tiles.json');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    for (const [collection, files] of Object.entries(data)) {
+      for (const file of files) {
+        const img = document.createElement('img');
+        img.src = `tiles/${collection}/${file}`;
+        img.className = 'cursor-pointer border';
+        img.addEventListener('click', () => {
+          activeTile = { collection, file };
+          logger.log(`select tile ${collection}/${file}`);
+        });
+        palette.appendChild(img);
+      }
     }
+  } catch (err) {
+    logger.log(`load tiles error: ${err.message}`);
+    palette.innerHTML = '<p class="text-red-500">Failed to load tiles.</p>';
   }
 }
 
-/** Fetch colors from manifest and render palette */
+/**
+ * Fetch colors from manifest and render palette.
+ * On failure, log error and inform user.
+ */
 async function loadColors() {
-  const res = await fetch('colors/colors.json');
-  const data = await res.json();
   const palette = document.getElementById('colorPalette');
-  for (const [paletteName, items] of Object.entries(data)) {
-    for (const item of items) {
-      const img = document.createElement('img');
-      img.src = `colors/${paletteName}/${item.file}`;
-      img.className = 'cursor-pointer border';
-      img.addEventListener('click', () => {
-        activeColor = item.color;
-        logger.log(`select color ${item.name}`);
-      });
-      palette.appendChild(img);
+  try {
+    const res = await fetch('colors/colors.json');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    for (const [paletteName, items] of Object.entries(data)) {
+      for (const item of items) {
+        const img = document.createElement('img');
+        img.src = `colors/${paletteName}/${item.file}`;
+        img.className = 'cursor-pointer border';
+        img.addEventListener('click', () => {
+          activeColor = item.color;
+          logger.log(`select color ${item.name}`);
+        });
+        palette.appendChild(img);
+      }
     }
+  } catch (err) {
+    logger.log(`load colors error: ${err.message}`);
+    palette.innerHTML = '<p class="text-red-500">Failed to load colors.</p>';
   }
 }
 
