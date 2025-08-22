@@ -1,6 +1,7 @@
 import { createGrid, placeTile, removeTile, serializeGrid, deserializeGrid } from './utils.js';
 import { Logger } from './logger.js';
 import { safeFetch, cacheBust } from './fetcher.js';
+import { observeLazyImages, PLACEHOLDER_SRC } from './lazy-loader.js';
 
 // Grid configuration
 const GRID_WIDTH = 8;
@@ -90,8 +91,9 @@ async function loadTiles() {
   for (const [collection, files] of Object.entries(data)) {
     for (const file of files) {
       const img = document.createElement('img');
-      img.src = `tiles/${collection}/${file}${cacheBust}`;
-      img.className = 'thumb';
+      img.src = PLACEHOLDER_SRC; // simple placeholder
+      img.dataset.src = `tiles/${collection}/${file}${cacheBust}`;
+      img.className = 'thumb skeleton';
       img.addEventListener('click', () => {
         activeTile = { collection, file };
         palette.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
@@ -102,6 +104,7 @@ async function loadTiles() {
       count++;
     }
   }
+  observeLazyImages(palette, logger); // lazy load thumbnails
   return { status, count };
 }
 
@@ -122,8 +125,9 @@ async function loadColors() {
   for (const [paletteName, items] of Object.entries(data)) {
     for (const item of items) {
       const img = document.createElement('img');
-      img.src = `colors/${paletteName}/${item.file}${cacheBust}`;
-      img.className = 'thumb';
+      img.src = PLACEHOLDER_SRC; // simple placeholder
+      img.dataset.src = `colors/${paletteName}/${item.file}${cacheBust}`;
+      img.className = 'thumb skeleton';
       img.addEventListener('click', () => {
         activeColor = item.color;
         palette.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
@@ -134,6 +138,7 @@ async function loadColors() {
       count++;
     }
   }
+  observeLazyImages(palette, logger); // lazy load thumbnails
   return { status, count };
 }
 

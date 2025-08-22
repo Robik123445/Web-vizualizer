@@ -12,6 +12,8 @@ npm start
 Open [http://localhost:3000](http://localhost:3000) in a browser.
 For dev updates use a hard refresh (`Ctrl+Shift+R`) to bypass cache.
 
+Thumbnails in side palettes are lazy-loaded for fewer initial requests and smoother scrolling on mobile.
+
 ## Structure
 
 - `public/` – `index.html` and other static assets
