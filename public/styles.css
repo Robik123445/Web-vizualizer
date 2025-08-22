@@ -1,51 +1,77 @@
-<!doctype html>
-<html lang="sk">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Web vizualizér</title>
-  <link rel="stylesheet" href="/styles.css?v=1" />
-</head>
-<body>
-  <div class="app">
-    <aside class="sidebar">
-      <div class="section">
-        <div class="section-title">Patterns</div>
-        <div id="patterns" class="thumb-grid"></div>
-      </div>
-      <div class="section">
-        <div class="section-title">Colors</div>
-        <div id="colors" class="thumb-grid"></div>
-      </div>
-    </aside>
+:root{
+  --bg:#0b0c10;
+  --panel:#111218;
+  --panel-2:#151720;
+  --border:#222533;
+  --text:#e9ecf1;
+  --muted:#9aa3b2;
+  --accent:#6ea8fe;
+  --danger:#ff6b6b;
+  --radius:14px;
+  --shadow:0 6px 18px rgba(0,0,0,.25);
+  --cell:120px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; background:linear-gradient(180deg,#0b0c10 0%, #0e1017 100%);
+  color:var(--text); font:14px/1.4 system-ui, Segoe UI, Roboto, Arial, sans-serif;
+}
 
-    <main class="stage-wrap">
-      <div class="toolbar">
-        <div class="left">
-          <button id="undoBtn" class="btn">Undo</button>
-          <button id="redoBtn" class="btn">Redo</button>
-          <button id="clearBtn" class="btn danger">Clear</button>
-        </div>
-        <div class="right">
-          <label class="ctrl">Cell
-            <input id="cellSize" type="range" min="60" max="180" value="120" />
-          </label>
-          <label class="ctrl">Grid
-            <input id="gridToggle" type="checkbox" checked />
-          </label>
-          <label class="ctrl">Snap
-            <input id="snapToggle" type="checkbox" checked />
-          </label>
-        </div>
-      </div>
+.app{display:grid; grid-template-columns:300px 1fr; height:100vh; gap:14px; padding:14px}
+.sidebar{
+  background:var(--panel); border:1px solid var(--border); border-radius:var(--radius);
+  padding:12px; overflow:auto; box-shadow:var(--shadow);
+}
+.section+.section{margin-top:12px}
+.section-title{
+  font-weight:600; color:var(--muted); letter-spacing:.04em; margin:6px 4px 8px;
+  text-transform:uppercase; font-size:12px;
+}
 
-      <div id="stage" class="stage">
-        <div id="grid" class="grid"></div>
-        <!-- sem renderuje tvoj JS dlaždice -->
-      </div>
-    </main>
-  </div>
+.thumb-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:10px}
+.thumb{
+  width:100%; aspect-ratio:1/1; border-radius:12px; border:1px solid var(--border);
+  background:#0f1118 center/cover no-repeat; position:relative; cursor:pointer;
+  box-shadow:0 2px 10px rgba(0,0,0,.15);
+  transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease, outline-color .12s ease;
+}
+.thumb:hover{ transform:translateY(-2px); box-shadow:var(--shadow); border-color:#2d3350 }
+.thumb.selected{ outline:2px solid var(--accent); outline-offset:2px; }
 
-  <script src="/src/app.js" defer></script>
-</body>
-</html>
+.stage-wrap{display:flex; flex-direction:column; min-width:0}
+.toolbar{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  background:var(--panel); border:1px solid var(--border); border-radius:var(--radius);
+  padding:10px 12px; margin-bottom:14px; box-shadow:var(--shadow)
+}
+.btn{
+  appearance:none; border:1px solid var(--border); background:var(--panel-2);
+  color:var(--text); padding:8px 12px; border-radius:10px; cursor:pointer;
+  transition:background .12s ease, transform .06s ease;
+}
+.btn:hover{ background:#1b1e2a } .btn:active{ transform:translateY(1px) }
+.btn.danger{ border-color:#45292b; background:#281214 } .btn.danger:hover{ background:#36181b }
+.ctrl{display:inline-flex; align-items:center; gap:8px; margin-left:12px; color:var(--muted)}
+.ctrl input[type="range"]{accent-color:var(--accent)}
+
+.stage{
+  flex:1; background:radial-gradient(1200px 400px at 20% -10%, #121421, #0c0e14 60%);
+  border:1px solid var(--border); border-radius:var(--radius);
+  position:relative; overflow:hidden; box-shadow:var(--shadow)
+}
+.grid{
+  background-image:
+     linear-gradient(to right, rgba(255,255,255,.06) 1px, transparent 1px),
+     linear-gradient(to bottom, rgba(255,255,255,.06) 1px, transparent 1px);
+  background-size: var(--cell) var(--cell);
+  inset:0; position:absolute; pointer-events:none;
+}
+.tile{
+  position:absolute; width:var(--cell); height:var(--cell);
+  border-radius:8px; box-shadow:0 3px 12px rgba(0,0,0,.35);
+  outline:1px solid rgba(255,255,255,.06); overflow:hidden;
+  transition:transform .08s ease;
+}
+.tile img, .tile canvas{width:100%; height:100%; object-fit:cover; display:block}
+.tile.dragging{ transform:scale(1.02) }
