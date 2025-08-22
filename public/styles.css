@@ -1,21 +1,23 @@
 :root{
-  --bg:#0b0c10;
-  --panel:#111218;
-  --panel-2:#151720;
-  --border:#222533;
-  --text:#e9ecf1;
-  --muted:#9aa3b2;
-  --accent:#6ea8fe;
-  --danger:#ff6b6b;
+  --bg:#f4f5f7;
+  --panel:#fff;
+  --panel-2:#f9fafb;
+  --border:#d0d5dd;
+  --text:#1f2937;
+  --muted:#6b7280;
+  --accent:#2563eb;
+  --danger:#dc2626;
   --radius:14px;
-  --shadow:0 6px 18px rgba(0,0,0,.25);
+  --shadow:0 6px 18px rgba(0,0,0,.1);
   --cell:120px;
 }
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
-  margin:0; background:linear-gradient(180deg,#0b0c10 0%, #0e1017 100%);
-  color:var(--text); font:14px/1.4 system-ui, Segoe UI, Roboto, Arial, sans-serif;
+  margin:0;
+  background:linear-gradient(180deg,#f9fafc 0%, #edf1f7 100%);
+  color:var(--text);
+  font:14px/1.4 system-ui, Segoe UI, Roboto, Arial, sans-serif;
   overflow-x:hidden;
 }
 
@@ -73,14 +75,18 @@ body{
 }
 
 .stage{
-  flex:1; background:radial-gradient(1200px 400px at 20% -10%, #121421, #0c0e14 60%);
-  border:1px solid var(--border); border-radius:var(--radius);
-  position:relative; overflow:hidden; box-shadow:var(--shadow)
+  flex:1;
+  background:radial-gradient(1200px 400px at 20% -10%, #fff, #e9edf3 60%);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  position:relative;
+  overflow:hidden;
+  box-shadow:var(--shadow)
 }
 .grid{
   background-image:
-     linear-gradient(to right, rgba(255,255,255,.06) 1px, transparent 1px),
-     linear-gradient(to bottom, rgba(255,255,255,.06) 1px, transparent 1px);
+     linear-gradient(to right, rgba(0,0,0,.06) 1px, transparent 1px),
+     linear-gradient(to bottom, rgba(0,0,0,.06) 1px, transparent 1px);
   background-size: var(--cell) var(--cell);
   inset:0; position:absolute; pointer-events:none;
 }
