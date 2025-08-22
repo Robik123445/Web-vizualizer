@@ -58,6 +58,13 @@ body{
 .btn.danger{ border-color:#45292b; background:#281214 } .btn.danger:hover{ background:#36181b }
 .ctrl{display:inline-flex; align-items:center; gap:8px; margin-left:12px; color:var(--muted)}
 .ctrl input[type="range"]{accent-color:var(--accent)}
+.ctrl select{
+  background:var(--panel-2);
+  border:1px solid var(--border);
+  color:var(--text);
+  border-radius:8px;
+  padding:4px 6px;
+}
 
 .stage{
   flex:1; background:radial-gradient(1200px 400px at 20% -10%, #121421, #0c0e14 60%);

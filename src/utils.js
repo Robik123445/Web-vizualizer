@@ -39,3 +39,20 @@ export function serializeGrid(grid) {
   }
   return result;
 }
+
+/**
+ * Fill existing grid from tile array
+ * Grid is cleared and new tiles placed na pozície
+ */
+export function deserializeGrid(grid, tiles) {
+  for (let y = 0; y < grid.length; y++) {
+    for (let x = 0; x < grid[0].length; x++) {
+      grid[y][x] = null;
+    }
+  }
+  for (const t of tiles) {
+    if (grid[t.y] && grid[t.y][t.x] === null) {
+      grid[t.y][t.x] = t;
+    }
+  }
+}

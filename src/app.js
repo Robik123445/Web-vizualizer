@@ -1,4 +1,4 @@
-import { createGrid, placeTile, removeTile, serializeGrid } from './utils.js';
+import { createGrid, placeTile, removeTile, serializeGrid, deserializeGrid } from './utils.js';
 import { Logger } from './logger.js';
 import { safeFetch, cacheBust } from './fetcher.js';
 
@@ -174,6 +174,7 @@ function bindUI() {
   });
   document.getElementById('undoBtn').addEventListener('click', undo);
   document.getElementById('clearBtn').addEventListener('click', clearGrid);
+  document.getElementById('importJson').addEventListener('click', importJson);
   document.getElementById('exportJson').addEventListener('click', exportJson);
   document.getElementById('exportPng').addEventListener('click', exportPng);
   document.getElementById('downloadLog').addEventListener('click', () => logger.download());
@@ -293,7 +294,7 @@ function updateUsage() {
 
 /** Export grid definition as JSON file */
 function exportJson() {
-  const data = serializeGrid(gridData);
+  const data = { cellSize, tiles: serializeGrid(gridData) };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -306,21 +307,59 @@ function exportJson() {
 
 /** Export grid visual as PNG */
 function exportPng() {
+  const scale = Number(document.getElementById('pngScale').value || 1);
   const xml = new XMLSerializer().serializeToString(gridSvg);
   const svg64 = btoa(unescape(encodeURIComponent(xml)));
   const image64 = 'data:image/svg+xml;base64,' + svg64;
   const img = new Image();
   img.onload = function () {
     const canvas = document.createElement('canvas');
-    canvas.width = GRID_WIDTH * cellSize;
-    canvas.height = GRID_HEIGHT * cellSize;
+    canvas.width = GRID_WIDTH * cellSize * scale;
+    canvas.height = GRID_HEIGHT * cellSize * scale;
     const ctx = canvas.getContext('2d');
+    ctx.scale(scale, scale);
     ctx.drawImage(img, 0, 0);
     const a = document.createElement('a');
     a.href = canvas.toDataURL('image/png');
     a.download = 'design.png';
     a.click();
-    logger.log('export png');
+    logger.log(`export png ${scale}x`);
   };
   img.src = image64;
+}
+
+/** Import grid definition from JSON file */
+function importJson() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'application/json';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        if (data.cellSize) {
+          cellSize = data.cellSize;
+          document.getElementById('cellSize').value = cellSize;
+        }
+        clearGrid();
+        if (Array.isArray(data.tiles)) {
+          deserializeGrid(gridData, data.tiles);
+          for (const t of data.tiles) {
+            drawTile(t);
+            history.push(t);
+          }
+        }
+        updateUsage();
+        logger.log('import json');
+      } catch (err) {
+        logger.log('import json failed');
+        alert('Invalid JSON');
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
 }
