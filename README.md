@@ -22,6 +22,15 @@ Run basic tests for utilities:
 npm test
 ```
 
+### Dev server
+Serve static assets with Express for local development:
+
+```bash
+npm start
+```
+
+The server exposes `public/` as the web root and maps `/src`, `/colors`, and `/tiles`. In development it disables caching (`Cache-Control: no-store`) and logs requests to `log.txt`.
+
 ## Structure
 - `tiles/` and `colors/` contain sample assets and manifest JSON files.
 - `log.txt` placeholder for logs; in-browser logger offers download.
