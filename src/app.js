@@ -16,6 +16,8 @@ const history = [];
 const gridData = createGrid(GRID_WIDTH, GRID_HEIGHT);
 const gridSvg = document.getElementById('grid');
 const usageDiv = document.getElementById('usage');
+const assetBadge = document.getElementById('assetBadge');
+const assetBanner = document.getElementById('assetBanner');
 
 init();
 
@@ -24,8 +26,11 @@ async function init() {
   gridSvg.setAttribute('width', GRID_WIDTH * CELL_SIZE);
   gridSvg.setAttribute('height', GRID_HEIGHT * CELL_SIZE);
   drawGridLines();
-  await loadTiles();
-  await loadColors();
+  const tilesInfo = await loadTiles();
+  const colorsInfo = await loadColors();
+  console.log(`/tiles/tiles.json status: ${tilesInfo.status}, count: ${tilesInfo.count}`);
+  console.log(`/colors/colors.json status: ${colorsInfo.status}, count: ${colorsInfo.count}`);
+  updateAssetStatus(tilesInfo.count, colorsInfo.count);
   bindUI();
 }
 
@@ -53,13 +58,16 @@ function drawGridLines() {
 
 /**
  * Fetch tiles from manifest and render palette.
- * On failure, log error and inform user.
+ * On failure, log error and inform user. Returns status and count.
  */
 async function loadTiles() {
   const palette = document.getElementById('tilePalette');
+  let status = 0;
+  let count = 0;
   try {
     const res = await fetch('tiles/tiles.json');
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    status = res.status;
+    if (!res.ok) throw new Error(`HTTP ${status}`);
     const data = await res.json();
     for (const [collection, files] of Object.entries(data)) {
       for (const file of files) {
@@ -71,23 +79,29 @@ async function loadTiles() {
           logger.log(`select tile ${collection}/${file}`);
         });
         palette.appendChild(img);
+        count++;
       }
     }
   } catch (err) {
     logger.log(`load tiles error: ${err.message}`);
     palette.innerHTML = '<p class="text-red-500">Failed to load tiles.</p>';
+    return { status, count: 0 };
   }
+  return { status, count };
 }
 
 /**
  * Fetch colors from manifest and render palette.
- * On failure, log error and inform user.
+ * On failure, log error and inform user. Returns status and count.
  */
 async function loadColors() {
   const palette = document.getElementById('colorPalette');
+  let status = 0;
+  let count = 0;
   try {
     const res = await fetch('colors/colors.json');
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    status = res.status;
+    if (!res.ok) throw new Error(`HTTP ${status}`);
     const data = await res.json();
     for (const [paletteName, items] of Object.entries(data)) {
       for (const item of items) {
@@ -99,11 +113,28 @@ async function loadColors() {
           logger.log(`select color ${item.name}`);
         });
         palette.appendChild(img);
+        count++;
       }
     }
   } catch (err) {
     logger.log(`load colors error: ${err.message}`);
     palette.innerHTML = '<p class="text-red-500">Failed to load colors.</p>';
+    return { status, count: 0 };
+  }
+  return { status, count };
+}
+
+/**
+ * Update top-right badge and show banner on missing assets.
+ * @param {number} tileCount - number of loaded tiles
+ * @param {number} colorCount - number of loaded colors
+ */
+function updateAssetStatus(tileCount, colorCount) {
+  assetBadge.textContent = `Tiles: ${tileCount} | Colors: ${colorCount}`;
+  if (tileCount === 0 || colorCount === 0) {
+    assetBanner.classList.remove('hidden');
+  } else {
+    assetBanner.classList.add('hidden');
   }
 }
 

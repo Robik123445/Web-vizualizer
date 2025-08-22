@@ -75,3 +75,18 @@ body{
 }
 .tile img, .tile canvas{width:100%; height:100%; object-fit:cover; display:block}
 .tile.dragging{ transform:scale(1.02) }
+
+/* small counter badge in toolbar */
+.asset-badge{
+  margin-left:12px; padding:4px 8px; font-size:12px; color:var(--muted);
+  border:1px solid var(--border); border-radius:8px; background:var(--panel-2);
+}
+
+/* hidden by default, shown when assets missing */
+.asset-banner{
+  background:var(--danger); color:var(--panel);
+  padding:8px 12px; border-radius:var(--radius); text-align:center;
+  margin-bottom:14px;
+}
+
+.hidden{display:none}
