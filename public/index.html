@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="sk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Web vizualizér</title>
+  <link rel="stylesheet" href="/styles.css?v=1">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="section">
+        <div class="section-title">Patterns</div>
+        <div id="patterns" class="thumb-grid"></div>
+      </div>
+      <div class="section">
+        <div class="section-title">Colors</div>
+        <div id="colors" class="thumb-grid"></div>
+      </div>
+    </aside>
+
+    <main class="stage-wrap">
+      <div class="toolbar">
+        <div class="left">
+          <button id="undoBtn" class="btn">Undo</button>
+          <button id="redoBtn" class="btn">Redo</button>
+          <button id="clearBtn" class="btn danger">Clear</button>
+        </div>
+        <div class="right">
+          <label class="ctrl">Cell <input id="cellSize" type="range" min="60" max="180" value="120"></label>
+          <label class="ctrl">Grid <input id="gridToggle" type="checkbox" checked></label>
+          <label class="ctrl">Snap <input id="snapToggle" type="checkbox" checked></label>
+        </div>
+      </div>
+
+      <div id="stage" class="stage">
+        <div id="grid" class="grid"></div>
+        <!-- render tiles sem -->
+      </div>
+    </main>
+  </div>
+
+  <script src="/src/app.js" defer></script>
+</body>
+</html>
