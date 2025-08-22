@@ -8,8 +8,9 @@ Simple in-browser editor for decorative panels.
 3. Click on the grid to place panels, rotate with **Rotate**, remove with right click or **Undo**.
 4. Adjust cell size with the **Cell** slider; show or hide grid lines via **Grid** toggle.
 5. Clear the scene with **Clear** when needed.
-6. Export design via **Export JSON** or **Export PNG**.
-7. Download actions log with **Download Log**.
+6. Import or export layout with **Import JSON** / **Export JSON**.
+7. Export stage-only image via **Export PNG** (choose 1× or 2× scale).
+8. Download actions log with **Download Log**.
 
 On small screens use the **Menu** button to toggle the sidebar; layout adapts down to 640px.
 
