@@ -19,6 +19,7 @@ const gridSvg = document.getElementById('grid');
 const usageDiv = document.getElementById('usage');
 const assetBadge = document.getElementById('assetBadge');
 const assetBanner = document.getElementById('assetBanner');
+const sidebar = document.getElementById('sidebar');
 
 init();
 
@@ -153,6 +154,12 @@ function bindUI() {
   document.getElementById('exportJson').addEventListener('click', exportJson);
   document.getElementById('exportPng').addEventListener('click', exportPng);
   document.getElementById('downloadLog').addEventListener('click', () => logger.download());
+  // toggle sidebar for mobile view
+  const sidebarToggle = document.getElementById('sidebarToggle');
+  sidebarToggle.addEventListener('click', () => {
+    sidebar.classList.toggle('open');
+    logger.log('toggle sidebar');
+  });
 }
 
 /** Handle grid click to place tile */

@@ -3,6 +3,6 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "test": "node tests/utils.test.js && node tests/fetcher.test.js"
+    "test": "node tests/utils.test.js && node tests/fetcher.test.js && node tests/ui.test.js"
   }
 }
