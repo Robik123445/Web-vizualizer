@@ -11,11 +11,11 @@
     <aside class="sidebar">
       <div class="section">
         <div class="section-title">Tile palette</div>
-        <div id="tilePalette" class="thumb-grid"></div>
+        <div id="patterns" class="thumb-grid"></div>
       </div>
       <div class="section">
         <div class="section-title">Color palette</div>
-        <div id="colorPalette" class="thumb-grid"></div>
+        <div id="colors" class="thumb-grid"></div>
       </div>
       <div class="section">
         <div class="section-title">Usage</div>
@@ -26,9 +26,10 @@
     <main class="stage-wrap">
       <div class="toolbar">
         <div class="left">
+          <button id="sidebarToggle" class="btn">☰</button>
           <button id="rotateBtn" class="btn">Rotate</button>
           <button id="undoBtn" class="btn">Undo</button>
-          <button id="resetBtn" class="btn danger">Reset</button>
+          <button id="clearBtn" class="btn danger">Clear</button>
         </div>
         <div class="right">
           <button id="exportJson" class="btn">Export JSON</button>
@@ -43,8 +44,11 @@
           <label class="ctrl">Snap
             <input id="snapToggle" type="checkbox" checked />
           </label>
+          <div id="assetBadge" class="asset-badge">Tiles: 0 | Colors: 0</div>
         </div>
       </div>
+
+      <div id="assetBanner" class="asset-banner hidden">Assets not loaded – check IDs/JSON/paths</div>
 
       <div id="stage" class="stage">
         <svg id="grid"></svg>

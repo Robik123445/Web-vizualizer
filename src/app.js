@@ -14,18 +14,33 @@ let rotation = 0; // 0,90,180,270
 const history = [];
 
 const gridData = createGrid(GRID_WIDTH, GRID_HEIGHT);
-const gridSvg = document.getElementById('grid');
-const usageDiv = document.getElementById('usage');
+let app, gridSvg, usageDiv, assetBadge, assetBanner;
+let tilePaletteEl, colorPaletteEl, clearBtn, sidebarToggle;
 
-init();
+document.addEventListener('DOMContentLoaded', init);
 
 /** Main init */
 async function init() {
-  gridSvg.setAttribute('width', GRID_WIDTH * CELL_SIZE);
-  gridSvg.setAttribute('height', GRID_HEIGHT * CELL_SIZE);
-  drawGridLines();
-  await loadTiles();
-  await loadColors();
+  app = document.querySelector('.app');
+  gridSvg = document.getElementById('grid');
+  usageDiv = document.getElementById('usage');
+  assetBadge = document.getElementById('assetBadge');
+  assetBanner = document.getElementById('assetBanner');
+  tilePaletteEl = document.getElementById('patterns') || document.getElementById('tilePalette');
+  colorPaletteEl = document.getElementById('colors') || document.getElementById('colorPalette');
+  clearBtn = document.getElementById('clearBtn') || document.getElementById('resetBtn');
+  sidebarToggle = document.getElementById('sidebarToggle');
+
+  if (gridSvg) {
+    gridSvg.setAttribute('width', GRID_WIDTH * CELL_SIZE);
+    gridSvg.setAttribute('height', GRID_HEIGHT * CELL_SIZE);
+    drawGridLines();
+  }
+  const tilesInfo = await loadTiles();
+  const colorsInfo = await loadColors();
+  console.log(`/tiles/tiles.json status: ${tilesInfo.status}, count: ${tilesInfo.count}`);
+  console.log(`/colors/colors.json status: ${colorsInfo.status}, count: ${colorsInfo.count}`);
+  updateAssetStatus(tilesInfo.count, colorsInfo.count);
   bindUI();
 }
 
@@ -53,13 +68,20 @@ function drawGridLines() {
 
 /**
  * Fetch tiles from manifest and render palette.
- * On failure, log error and inform user.
+ * On failure, log error and inform user. Returns status and count.
  */
 async function loadTiles() {
-  const palette = document.getElementById('tilePalette');
+  const palette = tilePaletteEl;
+  let status = 0;
+  let count = 0;
+  if (!palette) {
+    logger.log('tile palette element missing');
+    return { status, count };
+  }
   try {
     const res = await fetch('tiles/tiles.json');
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    status = res.status;
+    if (!res.ok) throw new Error(`HTTP ${status}`);
     const data = await res.json();
     for (const [collection, files] of Object.entries(data)) {
       for (const file of files) {
@@ -71,23 +93,33 @@ async function loadTiles() {
           logger.log(`select tile ${collection}/${file}`);
         });
         palette.appendChild(img);
+        count++;
       }
     }
   } catch (err) {
     logger.log(`load tiles error: ${err.message}`);
     palette.innerHTML = '<p class="text-red-500">Failed to load tiles.</p>';
+    return { status, count: 0 };
   }
+  return { status, count };
 }
 
 /**
  * Fetch colors from manifest and render palette.
- * On failure, log error and inform user.
+ * On failure, log error and inform user. Returns status and count.
  */
 async function loadColors() {
-  const palette = document.getElementById('colorPalette');
+  const palette = colorPaletteEl;
+  let status = 0;
+  let count = 0;
+  if (!palette) {
+    logger.log('color palette element missing');
+    return { status, count };
+  }
   try {
     const res = await fetch('colors/colors.json');
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    status = res.status;
+    if (!res.ok) throw new Error(`HTTP ${status}`);
     const data = await res.json();
     for (const [paletteName, items] of Object.entries(data)) {
       for (const item of items) {
@@ -99,40 +131,66 @@ async function loadColors() {
           logger.log(`select color ${item.name}`);
         });
         palette.appendChild(img);
+        count++;
       }
     }
   } catch (err) {
     logger.log(`load colors error: ${err.message}`);
     palette.innerHTML = '<p class="text-red-500">Failed to load colors.</p>';
+    return { status, count: 0 };
+  }
+  return { status, count };
+}
+
+/**
+ * Update top-right badge and show banner on missing assets.
+ * @param {number} tileCount - number of loaded tiles
+ * @param {number} colorCount - number of loaded colors
+ */
+function updateAssetStatus(tileCount, colorCount) {
+  assetBadge.textContent = `Tiles: ${tileCount} | Colors: ${colorCount}`;
+  if (tileCount === 0 || colorCount === 0) {
+    assetBanner.classList.remove('hidden');
+  } else {
+    assetBanner.classList.add('hidden');
   }
 }
 
 /** Attach listeners for grid and buttons */
 function bindUI() {
-  gridSvg.addEventListener('click', onGridClick);
-  gridSvg.addEventListener('contextmenu', e => e.preventDefault());
-  gridSvg.addEventListener('mousedown', e => {
-    if (e.button === 2) {
-      const pt = getCellFromEvent(e);
-      const removed = removeTile(gridData, pt.x, pt.y);
-      if (removed) {
-        const node = document.getElementById(removed.id);
-        node && node.remove();
-        logger.log(`remove tile at ${pt.x},${pt.y}`);
-        updateUsage();
+  if (gridSvg) {
+    gridSvg.addEventListener('click', onGridClick);
+    gridSvg.addEventListener('contextmenu', e => e.preventDefault());
+    gridSvg.addEventListener('mousedown', e => {
+      if (e.button === 2) {
+        const pt = getCellFromEvent(e);
+        const removed = removeTile(gridData, pt.x, pt.y);
+        if (removed) {
+          const node = document.getElementById(removed.id);
+          node && node.remove();
+          logger.log(`remove tile at ${pt.x},${pt.y}`);
+          updateUsage();
+        }
       }
-    }
-  });
+    });
+  }
 
-  document.getElementById('rotateBtn').addEventListener('click', () => {
+  const rotateBtn = document.getElementById('rotateBtn');
+  rotateBtn && rotateBtn.addEventListener('click', () => {
     rotation = (rotation + 90) % 360;
     logger.log(`rotation set to ${rotation}`);
   });
-  document.getElementById('undoBtn').addEventListener('click', undo);
-    document.getElementById('resetBtn').addEventListener('click', resetGrid);
-  document.getElementById('exportJson').addEventListener('click', exportJson);
-  document.getElementById('exportPng').addEventListener('click', exportPng);
-  document.getElementById('downloadLog').addEventListener('click', () => logger.download());
+  const undoBtn = document.getElementById('undoBtn');
+  undoBtn && undoBtn.addEventListener('click', undo);
+  clearBtn && clearBtn.addEventListener('click', resetGrid);
+  document.getElementById('exportJson')?.addEventListener('click', exportJson);
+  document.getElementById('exportPng')?.addEventListener('click', exportPng);
+  document.getElementById('downloadLog')?.addEventListener('click', () => logger.download());
+  if (sidebarToggle && app) {
+    sidebarToggle.addEventListener('click', () => {
+      app.classList.toggle('sidebar-collapsed');
+    });
+  }
 }
 
 /** Handle grid click to place tile */
