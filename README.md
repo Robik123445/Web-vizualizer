@@ -38,3 +38,9 @@ Run tests with:
 ```bash
 npm test
 ```
+
+## Accessibility
+
+- Buttons include `aria-label` attributes for screen readers.
+- Interactive elements show a visible focus ring.
+- Tile and color thumbnails can be selected via keyboard (Enter or Space).
