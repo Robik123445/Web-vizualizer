@@ -9,6 +9,8 @@ Simple in-browser editor for decorative panels.
 4. Export design via **Export JSON** or **Export PNG**.
 5. Download actions log with **Download Log**.
 
+On small screens use the **Menu** button to toggle the sidebar; layout adapts down to 640px.
+
 ## Development
 - TailwindCSS is loaded from CDN.
 - Grid utilities are in `src/utils.js`.
